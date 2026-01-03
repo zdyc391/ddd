@@ -1,0 +1,1740 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>无标题文档</title>
+</head>
+
+<body>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>家族模拟器</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap">
+    <style>
+        :root {
+            --strawberry-pink: #FF85A2;
+            --cream-white: #FFF9F9;
+            --light-gold: #FFD700;
+            --soft-pink: #FFC1CC;
+            --deep-pink: #E91E63;
+            --text-brown: #5A3E36;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Ma Shan Zheng', cursive, 'ZCOOL XiaoWei', serif;
+            background-color: var(--cream-white);
+            color: var(--text-brown);
+            line-height: 1.6;
+            padding: 10px;
+            max-width: 100%;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255, 133, 162, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 215, 0, 0.05) 0%, transparent 20%);
+        }
+        
+        .game-container {
+            max-width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .header-card {
+            background: linear-gradient(145deg, var(--cream-white), #ffeef2);
+            border-radius: 20px;
+            padding: 20px;
+            border: 3px solid var(--strawberry-pink);
+            box-shadow: 0 8px 25px rgba(255, 133, 162, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--strawberry-pink), var(--light-gold));
+        }
+        
+        .game-title {
+            text-align: center;
+            font-size: 28px;
+            color: #C2185B;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .game-title::after {
+            content: "🌸";
+            margin-left: 10px;
+        }
+        
+        .game-title::before {
+            content: "🌸";
+            margin-right: 10px;
+        }
+        
+        .time-display {
+            text-align: center;
+            background: linear-gradient(90deg, var(--strawberry-pink), var(--deep-pink));
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            display: inline-block;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(255, 133, 162, 0.3);
+            margin-bottom: 15px;
+        }
+        
+        .card {
+            background: linear-gradient(145deg, #fff, #ffeef2);
+            border-radius: 18px;
+            padding: 18px;
+            border: 2px solid var(--soft-pink);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .card-header {
+            font-size: 20px;
+            color: var(--strawberry-pink);
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px dashed var(--soft-pink);
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-header::before {
+            content: "🍓";
+            margin-right: 10px;
+            font-size: 22px;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px dotted var(--soft-pink);
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #C2185B;
+            flex: 1;
+        }
+        
+        .info-value {
+            flex: 1.5;
+            text-align: right;
+        }
+        
+        .progress-container {
+            margin: 12px 0;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background-color: #FFE4E9;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--strawberry-pink);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--strawberry-pink), var(--deep-pink));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            font-size: 12px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .tag {
+            display: inline-block;
+            background: var(--strawberry-pink);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-right: 6px;
+            margin-bottom: 6px;
+        }
+        
+        .family-tree {
+            background: #FFF0F5;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px dashed var(--strawberry-pink);
+            font-size: 15px;
+            line-height: 1.8;
+        }
+        
+        .tree-level-1 {
+            margin-left: 0;
+            font-weight: bold;
+        }
+        
+        .tree-level-2 {
+            margin-left: 20px;
+            position: relative;
+        }
+        
+        .tree-level-2::before {
+            content: "├─";
+            position: absolute;
+            left: -15px;
+            color: var(--strawberry-pink);
+        }
+        
+        .tree-level-3 {
+            margin-left: 40px;
+            position: relative;
+        }
+        
+        .tree-level-3::before {
+            content: "└─";
+            position: absolute;
+            left: -20px;
+            color: var(--strawberry-pink);
+        }
+        
+        .events-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .events-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .event-card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            border: 2px solid var(--soft-pink);
+            transition: all 0.3s ease;
+        }
+        
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(255, 133, 162, 0.2);
+            border-color: var(--strawberry-pink);
+        }
+        
+        .event-title {
+            font-size: 18px;
+            color: #C2185B;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .event-title::before {
+            content: "📋";
+            margin-right: 8px;
+        }
+        
+        .event-description {
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #666;
+        }
+        
+        .event-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .event-option {
+            background: #FFF0F5;
+            border: 1px solid var(--soft-pink);
+            border-radius: 10px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+        
+        .event-option:hover {
+            background: #FFE4E9;
+            border-color: var(--strawberry-pink);
+            transform: translateX(5px);
+        }
+        
+        .event-option::before {
+            content: "▸";
+            color: var(--strawberry-pink);
+            margin-right: 8px;
+            font-weight: bold;
+        }
+        
+        .control-buttons {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px dashed var(--strawberry-pink);
+        }
+        
+        .control-btn {
+            background: linear-gradient(145deg, var(--strawberry-pink), var(--deep-pink));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 14px 24px;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 133, 162, 0.3);
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 133, 162, 0.5);
+        }
+        
+        .control-btn::before {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        #continue-btn::before {
+            content: "⏭️";
+        }
+        
+        #restart-btn::before {
+            content: "🔄";
+        }
+        
+        #query-btn::before {
+            content: "🔍";
+        }
+        
+        #daily-btn::before {
+            content: "📖";
+        }
+        
+        #save-btn::before {
+            content: "💾";
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(90deg, var(--strawberry-pink), var(--deep-pink));
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            max-width: 300px;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: var(--cream-white);
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+            border: 3px solid var(--strawberry-pink);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            font-size: 24px;
+            color: #C2185B;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--strawberry-pink);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .character-details {
+            background: #FFF0F5;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .character-name {
+            font-size: 20px;
+            color: #C2185B;
+            margin-bottom: 10px;
+        }
+        
+        .status-icon {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .status-healthy {
+            background-color: #4CAF50;
+        }
+        
+        .status-pregnant {
+            background-color: #9C27B0;
+        }
+        
+        .status-ill {
+            background-color: #F44336;
+        }
+        
+        .pill {
+            display: inline-block;
+            background: linear-gradient(90deg, #FFD700, #FFC107);
+            color: #8B4513;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .season-icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        
+        .spring { color: #4CAF50; }
+        .summer { color: #FF9800; }
+        .autumn { color: #795548; }
+        .winter { color: #2196F3; }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- 游戏标题和时间 -->
+        <div class="header-card">
+            <h1 class="game-title">家族模拟器</h1>
+            <div style="text-align: center; margin-bottom: 15px;">
+                <div class="time-display" id="time-display">大周王朝 · 永昌三年 · 春二月</div>
+                <div style="font-size: 14px; color: #888; margin-top: 5px;">🌸 重农抑商 · 匠籍为尊 · 子嗣兴旺 🌸</div>
+            </div>
+        </div>
+        
+        <!-- 世界信息卡片 -->
+        <div class="card">
+            <div class="card-header">🌍 世界信息</div>
+            <div class="info-row">
+                <div class="info-label">时间</div>
+                <div class="info-value" id="current-time">永昌三年二月初五</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">地点</div>
+                <div class="info-value" id="current-location">锦州 · 临安县 · 桃花村</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">季节</div>
+                <div class="info-value">
+                    <span class="season-icon spring">🌸</span> 春季 · 生机盎然
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">新闻</div>
+                <div class="info-value" id="current-news">朝廷发布新催生令，家族人口增长将获嘉奖</div>
+            </div>
+        </div>
+        
+        <!-- 家族概况卡片 -->
+        <div class="card">
+            <div class="card-header">🏠 家族概况</div>
+            <div class="info-row">
+                <div class="info-label">家族流派</div>
+                <div class="info-value">
+                    <span class="tag" id="family-style">耕读传家</span>
+                    <span class="pill">科举成功率+15%</span>
+                    <span class="pill">哥儿气质+10</span>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">家族气运</div>
+                <div class="info-value">
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>积善余庆</span>
+                            <span id="fortune-value">78%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="fortune-bar" style="width: 78%;">78%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">家族威望</div>
+                <div class="info-value">
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>声望</span>
+                            <span id="prestige-value">65/100</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="prestige-bar" style="width: 65%;">65%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">家族资金</div>
+                <div class="info-value">
+                    <div style="font-weight: bold; color: #C2185B;" id="family-funds">1,250 两</div>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 42%; background: linear-gradient(90deg, #4CAF50, #8BC34A);">充足</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 族长信息卡片 -->
+        <div class="card">
+  <div class="card-header">🏮 族长信息</div>
+  <div class="character-details">
+    <div class="character-name">颂明远 (字德昭)</div>
+    <div class="info-row">
+      <div class="info-label">年龄</div>
+      <div class="info-value" id="age-value">30岁</div>
+    </div>
+    <!-- 其他信息行 -->
+  </div>
+</div>
+
+<script>
+  // 随机年龄逻辑
+  let minAge = 18;
+  let maxAge = 60;
+  let randomAge = Math.floor(Math.random() * (maxAge - minAge + 1)) + minAge;
+  document.getElementById('age-value').textContent = randomAge + '岁';
+</script>
+                <div class="info-row">
+                    <div class="info-label">先天资质</div>
+                    <div class="info-value">
+                        <span class="pill">体魄78</span>
+                        <span class="pill">智慧85</span>
+                        <span class="pill">魅力70</span>
+                        <span class="pill">气运65</span>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">能力数值</div>
+                    <div class="info-value">
+                        <span class="pill" style="background: linear-gradient(90deg, #2196F3, #03A9F4);">文治82</span>
+                        <span class="pill" style="background: linear-gradient(90deg, #F44336, #E91E63);">武功61</span>
+                        <span class="pill" style="background: linear-gradient(90deg, #9C27B0, #673AB7);">技艺45</span>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">性格特质</div>
+                    <div class="info-value">稳重持家 · 重视教育 · 略有保守</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 宅院情况卡片 -->
+        <div class="card">
+            <div class="card-header">🏡 宅院情况</div>
+            <div class="family-tree">
+                <div class="tree-level-1">👨 族长：颂明远 (32岁) · 颂家家主</div>
+                <div class="tree-level-2">
+                    👩 正君：林清荷 (29岁) 
+                    <span class="status-icon status-pregnant"></span>孕三月
+                    <span class="pill" style="background: linear-gradient(90deg, #F44336, #E91E63);">孕痣：正红</span>
+                    <span class="pill" style="background: linear-gradient(90deg, #4CAF50, #8BC34A);">性格：贤惠</span>
+                </div>
+                <div class="tree-level-3">
+                    🧒 长子：颂文轩 (8岁) 
+                    <span class="pill" style="background: linear-gradient(90deg, #2196F3, #03A9F4);">资质：聪慧</span>
+                    <span class="pill">学堂：文课</span>
+                </div>
+                <div class="tree-level-3">
+                    🧒 次子：颂文浩 (5岁) 
+                    <span class="pill">资质：普通</span>
+                    <span class="pill">幼年</span>
+                </div>
+                <div class="tree-level-2">
+                    👩 侧侍：柳娇儿 (24岁) 
+                    <span class="status-icon status-healthy"></span>健康
+                    <span class="pill" style="background: linear-gradient(90deg, #FF9800, #FFC107);">孕痣：浅粉</span>
+                    <span class="pill" style="background: linear-gradient(90deg, #FF9800, #FFC107);">性格：娇憨</span>
+                </div>
+                <div class="tree-level-3">
+                    👧 长哥儿：颂玉瑶 (12岁) 
+                    <span class="pill" style="background: linear-gradient(90deg, #FF9800, #FFC107);">孕痣：浅粉</span>
+                    <span class="pill">闺塾：仪态</span>
+                </div>
+                <div class="tree-level-2">
+                    👩 侧侍：赵慧娘 (26岁) 
+                    <span class="status-icon status-healthy"></span>健康
+                    <span class="pill" style="background: linear-gradient(90deg, #F44336, #E91E63);">孕痣：正红</span>
+                    <span class="pill" style="background: linear-gradient(90deg, #2196F3, #03A9F4);">性格：精明</span>
+                </div>
+                <div class="tree-level-3">
+                    👧 次哥儿：颂玉婷 (3岁) 
+                    <span class="pill">孕痣：未定</span>
+                    <span class="pill">幼年</span>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">后宅和谐度</div>
+                <div class="info-value">
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>家庭和睦</span>
+                            <span id="harmony-value">82/100</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="harmony-bar" style="width: 82%; background: linear-gradient(90deg, #9C27B0, #673AB7);">82%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 本月事件 -->
+        <div class="card">
+            <div class="card-header">📅 本月事件</div>
+            <div style="background: #FFF0F5; border-radius: 10px; padding: 12px; margin-bottom: 15px; border-left: 5px solid var(--light-gold);">
+                <div style="display: flex; align-items: flex-start;">
+                    <div style="font-size: 24px; margin-right: 10px;">📢</div>
+                    <div>
+                        <div style="font-weight: bold; color: #C2185B; margin-bottom: 5px;">本月要事</div>
+                        <div id="month-summary">春耕时节已至，需分配劳力安排农事；县里将举办上巳节踏青，可带哥儿参与；媒婆王氏上门为长哥儿说亲。</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="events-section" id="events-section">
+                <!-- 事件将通过JavaScript动态生成 -->
+            </div>
+        </div>
+        
+        <!-- 社交网络卡片 -->
+        <div class="card">
+            <div class="card-header">🤝 社交网络</div>
+            <div class="info-row">
+                <div class="info-label">媒婆关系</div>
+                <div class="info-value">
+                    <span class="tag">王氏(友好)</span>
+                    <span class="tag">李氏(普通)</span>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">官府人脉</div>
+                <div class="info-value">
+                    <span class="tag">县丞(相识)</span>
+                    <span class="tag">主簿(友好)</span>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">邻里关系</div>
+                <div class="info-value">
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>积善之家</span>
+                            <span>95/100</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 95%; background: linear-gradient(90deg, #4CAF50, #8BC34A);">95%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">监视度(玉瑶)</div>
+                <div class="info-value">
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>名节保护</span>
+
+                            <span>45/100</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 45%;">45%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 控制按钮 -->
+        <div class="control-buttons">
+            <button class="control-btn" id="continue-btn">继续</button>
+            <button class="control-btn" id="restart-btn">重开</button>
+            <button class="control-btn" id="query-btn">查询</button>
+            <button class="control-btn" id="daily-btn">日常</button>
+            <button class="control-btn" id="save-btn">存档</button>
+        </div>
+    </div>
+    
+    <!-- 通知消息 -->
+    <div class="notification" id="notification"></div>
+    
+    <!-- 查询模态框 -->
+    <div class="modal" id="query-modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('query-modal')">×</button>
+            <div class="modal-header">🔍 信息查询</div>
+            <div style="margin-bottom: 15px;">
+                <input type="text" id="search-input" placeholder="输入人物姓名、产业名称或事件编号..." style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid var(--soft-pink); font-family: inherit;">
+            </div>
+            <div id="query-results">
+                <!-- 查询结果将在这里显示 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- 日常内容模态框 -->
+    <div class="modal" id="daily-modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('daily-modal')">×</button>
+            <div class="modal-header">📖 日常生活</div>
+            <div id="daily-content" style="line-height: 1.8; max-height: 400px; overflow-y: auto;">
+                <!-- 日常内容将在这里显示 -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- 事件结果模态框 -->
+    <div class="modal" id="event-result-modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('event-result-modal')">×</button>
+            <div class="modal-header" id="event-result-title">事件结果</div>
+            <div id="event-result-content" style="line-height: 1.8;">
+                <!-- 事件结果将在这里显示 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 游戏状态数据
+        const gameState = {
+            // 时间信息
+            year: 3,
+            month: 2,
+            day: 5,
+            season: "春",
+            
+            // 地点信息
+            region: "锦州",
+            county: "临安县",
+            village: "桃花村",
+            
+            // 家族信息
+            familyName: "颂",
+            familyStyle: "耕读传家",
+            fortune: 78,
+            prestige: 65,
+            funds: 1250,
+            harmony: 82,
+            
+            // 行动点
+            actionPoints: 3,
+            maxActionPoints: 3,
+            
+            // 人物数据
+            characters: {
+                // 族长
+                patriarch: {
+                    name: "颂明远",
+                    courtesyName: "德昭",
+                    age: 32,
+                    constitution: 78,
+                    wisdom: 85,
+                    charm: 70,
+                    luck: 65,
+                    governance: 82,
+                    martial: 61,
+                    skill: 45,
+                    traits: ["稳重持家", "重视教育", "略有保守"]
+                },
+                
+                // 正君
+                principalSpouse: {
+                    name: "林清荷",
+                    age: 29,
+                    pregnancyMark: "正红",
+                    personality: "贤惠",
+                    pregnant: true,
+                    pregnancyMonth: 3,
+                    health: "健康"
+                },
+                
+                // 侧侍
+                concubines: [
+                    {
+                        name: "柳娇儿",
+                        age: 24,
+                        pregnancyMark: "浅粉",
+                        personality: "娇憨",
+                        pregnant: false,
+                        health: "健康"
+                    },
+                    {
+                        name: "赵慧娘",
+                        age: 26,
+                        pregnancyMark: "正红",
+                        personality: "精明",
+                        pregnant: false,
+                        health: "健康"
+                    }
+                ],
+                
+                // 子嗣
+                children: [
+                    {
+                        name: "颂文轩",
+                        age: 8,
+                        gender: "male",
+                        intelligence: "聪慧",
+                        education: "文课",
+                        health: "健康"
+                    },
+                    {
+                        name: "颂文浩",
+                        age: 5,
+                        gender: "male",
+                        intelligence: "普通",
+                        education: "幼年",
+                        health: "健康"
+                    },
+                    {
+                        name: "颂玉瑶",
+                        age: 12,
+                        gender: "哥儿",
+                        pregnancyMark: "浅粉",
+                        education: "仪态",
+                        surveillance: 45,
+                        health: "健康"
+                    },
+                    {
+                        name: "颂玉婷",
+                        age: 3,
+                        gender: "哥儿",
+                        pregnancyMark: "未定",
+                        education: "幼年",
+                        health: "健康"
+                    }
+                ]
+            },
+            
+            // 社交关系
+            relationships: {
+                matchmakers: [
+                    { name: "王氏", relation: "友好" },
+                    { name: "李氏", relation: "普通" }
+                ],
+                officials: [
+                    { name: "县丞", relation: "相识" },
+                    { name: "主簿", relation: "友好" }
+                ],
+                neighbors: 95
+            },
+            
+            // 本月事件
+            monthlyEvents: [],
+            
+            // 游戏历史
+            history: []
+        };
+        
+        // 事件数据库
+        const eventsDatabase = {
+            springEvents: [
+                {
+                    id: 1,
+                    title: "春耕安排",
+                    description: "一年之计在于春，田地的耕种安排关系到整年的收成。作为耕读传家的家族，农业是根基。今年雨水充沛，是丰收的好兆头。",
+                    options: [
+                        {
+                            id: "1a",
+                            text: "亲自监督春耕，确保今年收成",
+                            effects: { prestige: 5, funds: -50, harmony: 2 },
+                            result: "你亲自下田监督春耕，与佃农们一同劳作。虽然辛苦，但看到整齐的田垄和饱满的种子，你感到欣慰。邻里们称赞你亲力亲为，家族威望提升了。"
+                        },
+                        {
+                            id: "1b",
+                            text: "交给管事处理，自己专心科举备考",
+                            effects: { wisdom: 3, funds: -30 },
+                            result: "你将春耕事务交给老管事处理，自己专心研读四书五经。虽然管事经验丰富，但缺乏你的监督，部分田地耕作不够精细，可能影响收成。"
+                        },
+                        {
+                            id: "1c",
+                            text: "动员全家参与，培养子嗣劳作意识",
+                            effects: { harmony: 5, childrenHealth: 2, funds: -20 },
+                            result: "你带领全家参与春耕，正君清荷负责送茶送水，孩子们在田边学习农事。长子文轩对农耕产生了兴趣，次子文浩玩得开心。家庭凝聚力增强了。"
+                        }
+                    ]
+                },
+                {
+                    id: 2,
+                    title: "上巳节踏青",
+                    description: "三月三上巳节，临安县将举办踏青游园会。这是未婚哥儿结识良缘的好机会，也是展示家族教养的场合。",
+                    options: [
+                        {
+                            id: "2a",
+                            text: "带所有适龄哥儿参加，寻找良缘",
+                            effects: { prestige: 3, funds: -80, childrenCharm: 5 },
+                            result: "你带着玉瑶和全家参加上巳节。玉瑶的仪态学习初见成效，举止得体，吸引了数家公子的注意。赵家公子似乎对玉瑶颇为欣赏。"
+                        },
+                        {
+                            id: "2b",
+                            text: "只带长哥儿参加，精心准备",
+                            effects: { prestige: 4, funds: -100, childCharm: 8 },
+                            result: "你为玉瑶精心准备了新衣和首饰，只带他一人参加。玉瑶在游园会上表现优雅，县丞夫人称赞他有大家风范。"
+                        },
+                        {
+                            id: "2c",
+                            text: "不参加，在家举办小型诗会",
+                            effects: { childrenWisdom: 4, funds: -40 },
+                            result: "你在家举办小型诗会，邀请了几位书生和哥儿。玉瑶在诗会上背诵了《诗经》篇章，文轩也展示了近期所学。家族文化氛围浓厚了。"
+                        }
+                    ]
+                },
+                {
+                    id: 3,
+                    title: "媒婆说亲",
+                    description: "媒婆王氏上门为12岁的长哥儿颂玉瑶说亲。对方是县里布商李家的次子，家境殷实，但传闻有些骄纵。",
+                    options: [
+                        {
+                            id: "3a",
+                            text: "详细打听对方情况，再做决定",
+                            effects: { matchmakerRelation: -5, information: "详细" },
+                            result: "你仔细询问了李家公子的品行，王氏虽有些不满，但还是透露了实情：李家公子确实有些骄纵，但家底丰厚。你需要更多时间考虑。"
+                        },
+                        {
+                            id: "3b",
+                            text: "婉拒，认为哥儿还小不急",
+                            effects: { matchmakerRelation: -10, childSurveillance: -5 },
+                            result: "你婉拒了王氏，表示玉瑶还小，想多留几年。王氏不太高兴地离开了。玉瑶知道后松了口气，他还不愿这么早谈婚论嫁。"
+                        },
+                        {
+                            id: "3c",
+                            text: "先接触看看，安排相看",
+                            effects: { matchmakerRelation: 5, funds: -30 },
+                            result: "你同意安排相看，并给了王氏谢礼。王氏高兴地安排下月初在寺庙'偶遇'。玉瑶有些紧张，但清荷安慰他会好好准备。"
+                        }
+                    ]
+                },
+                {
+                    id: 4,
+                    title: "家塾教育",
+                    description: "长子文轩已到求学关键期，需决定他的教育重点。是全力备考科举，还是全面发展？",
+                    options: [
+                        {
+                            id: "4a",
+                            text: "全力备考，专攻四书五经",
+                            effects: { childWisdom: 6, childConstitution: -2 },
+                            result: "你为文轩聘请了专门的经学老师，课程排得满满。文轩很用功，但脸色日渐苍白，似乎缺乏锻炼。"
+                        },
+                        {
+                            id: "4b",
+                            text: "文武兼修，全面发展",
+                            effects: { childWisdom: 3, childConstitution: 3, funds: -60 },
+                            result: "你为文轩安排了上午文课、下午武课的学习计划。文轩既能读书也能习武，体质和学识都有提升。"
+                        },
+                        {
+                            id: "4c",
+                            text: "尊重孩子兴趣，让他自己选择",
+                            effects: { childHappiness: 8, childWisdom: 1 },
+                            result: "你让文轩自己选择学习方向。他选择了文课为主，但要求每天有时间看杂书。他看起来很开心，学习也更主动了。"
+                        }
+                    ]
+                },
+                {
+                    id: 5,
+                    title: "正君养胎",
+                    description: "正君清荷已怀孕三月，需要特别照料。如何安排他的养胎事宜？",
+                    options: [
+                        {
+                            id: "4a",
+                            text: "精心照料，购买上等补品",
+                            effects: { funds: -120, spouseHealth: 8, harmony: 5 },
+                            result: "你为清荷购买了燕窝、阿胶等上等补品，每日亲自探望。清荷面色红润，胎象稳固。其他侍君虽有些羡慕，但理解正君有孕需要特别照顾。"
+                        },
+                        {
+                            id: "4b",
+                            text: "按平常对待，不过度特殊",
+                            effects: { funds: -40, spouseHealth: 3, harmony: -2 },
+                            result: "你认为怀孕是自然过程，不必过度特殊对待。清荷有些失落，但未表现出来。娇儿私下安慰清荷，两人关系更亲密了。"
+                        },
+                        {
+                            id: "4c",
+                            text: "请教经验产婆，科学养胎",
+                            effects: { funds: -80, spouseHealth: 6, childPotential: 5 },
+                            result: "你请来县里有名的产婆指导养胎。产婆建议均衡饮食，适度活动。清荷按指导调养，胎象良好，孩子发育也不错。"
+                        }
+                    ]
+                }
+            ]
+        };
+        
+        // 新闻数据库
+        const newsDatabase = [
+            "朝廷发布新催生令，家族人口增长将获嘉奖",
+            "锦州知府鼓励桑蚕养殖，提供技术指导",
+            "临安县将举办春季科举模拟考",
+            "上巳节游园会筹备中，各家族积极准备",
+            "江南水灾，朝廷加征赋税以赈灾",
+            "边关战事平息，皇帝大赦天下",
+            "皇室采选匠籍哥儿，待遇优厚",
+            "锦州丝绸价格上扬，桑农获利",
+            "临安县新开一家医馆，专治妇产疾病",
+            "朝廷严查土地兼并，地主需重新登记田产"
+        ];
+        
+        // 初始化游戏
+        function initGame() {
+            updateDisplay();
+            generateMonthlyEvents();
+            showNotification("游戏开始！你是颂氏家族的族长，请谨慎决策，带领家族走向繁荣。", "success");
+        }
+        
+        // 更新显示
+        function updateDisplay() {
+            // 更新时间显示
+            const seasonNames = {1:"春",2:"春",3:"春",4:"夏",5:"夏",6:"夏",7:"秋",8:"秋",9:"秋",10:"冬",11:"冬",12:"冬"};
+            const monthNames = ["正","二","三","四","五","六","七","八","九","十","十一","十二"];
+            
+            document.getElementById('time-display').textContent = 
+                `大周王朝 · 永昌${gameState.year}年 · ${seasonNames[gameState.month]}${monthNames[gameState.month-1]}月`;
+            
+            document.getElementById('current-time').textContent = 
+                `永昌${gameState.year}年${seasonNames[gameState.month]}${monthNames[gameState.month-1]}月初五`;
+            
+            document.getElementById('current-location').textContent = 
+                `${gameState.region} · ${gameState.county} · ${gameState.village}`;
+            
+            // 更新家族信息
+            document.getElementById('family-style').textContent = gameState.familyStyle;
+            document.getElementById('fortune-value').textContent = `${gameState.fortune}%`;
+            document.getElementById('fortune-bar').style.width = `${gameState.fortune}%`;
+            document.getElementById('fortune-bar').textContent = `${gameState.fortune}%`;
+            
+            document.getElementById('prestige-value').textContent = `${gameState.prestige}/100`;
+            document.getElementById('prestige-bar').style.width = `${gameState.prestige}%`;
+            document.getElementById('prestige-bar').textContent = `${gameState.prestige}%`;
+            
+            document.getElementById('family-funds').textContent = `${gameState.funds.toLocaleString()} 两`;
+            
+            document.getElementById('harmony-value').textContent = `${gameState.harmony}/100`;
+            document.getElementById('harmony-bar').style.width = `${gameState.harmony}%`;
+            document.getElementById('harmony-bar').textContent = `${gameState.harmony}%`;
+            
+            // 随机选择一条新闻
+            const randomNews = newsDatabase[Math.floor(Math.random() * newsDatabase.length)];
+            document.getElementById('current-news').textContent = randomNews;
+            
+            // 更新月份摘要
+            updateMonthSummary();
+        }
+        
+        // 更新月份摘要
+        function updateMonthSummary() {
+            const summaries = [
+                "春耕时节已至，需分配劳力安排农事；县里将举办上巳节踏青，可带哥儿参与；媒婆王氏上门为长哥儿说亲。",
+                "农事繁忙，需监督田间管理；长子文轩学习遇到瓶颈，需关注；正君清荷孕期反应加重，需特别照料。",
+                "桑蚕养殖进入关键期，需哥儿细心照料；县里举办诗会，可带子嗣参加；次子文浩即将满六岁，需安排入学。",
+                "夏季炎热，需准备消暑物资；端午将至，可安排家族活动；店铺账目需要核查，防止管事中饱私囊。"
+            ];
+            
+            const summaryIndex = (gameState.month - 1) % 4;
+            document.getElementById('month-summary').textContent = summaries[summaryIndex];
+        }
+        
+        // 生成每月事件
+        function generateMonthlyEvents() {
+            const eventsSection = document.getElementById('events-section');
+            eventsSection.innerHTML = '';
+            
+            // 根据季节选择事件
+            let eventsPool = eventsDatabase.springEvents;
+            
+            // 随机选择5个事件
+            const selectedEvents = [];
+            const usedIds = new Set();
+            
+            while(selectedEvents.length < 5 && selectedEvents.length < eventsPool.length) {
+                const randomIndex = Math.floor(Math.random() * eventsPool.length);
+                const event = eventsPool[randomIndex];
+                
+                if(!usedIds.has(event.id)) {
+                    selectedEvents.push(event);
+                    usedIds.add(event.id);
+                }
+            }
+            
+            // 保存到游戏状态
+            gameState.monthlyEvents = selectedEvents;
+            
+            // 生成事件卡片
+            selectedEvents.forEach(event => {
+                const eventCard = document.createElement('div');
+                eventCard.className = 'event-card';
+                eventCard.innerHTML = `
+                    <div class="event-title">${event.title}</div>
+                    <div class="event-description">${event.description}</div>
+                    <div class="event-options">
+                        ${event.options.map(option => `
+                            <div class="event-option" onclick="selectEventOption(${event.id}, '${option.id}')">
+                                ${option.text}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                eventsSection.appendChild(eventCard);
+            });
+        }
+        
+        // 选择事件选项
+        function selectEventOption(eventId, optionId) {
+            if(gameState.actionPoints <= 0) {
+                showNotification("本月行动点已用完，请推进到下个月。", "error");
+                return;
+            }
+            
+            // 找到对应事件和选项
+            const event = gameState.monthlyEvents.find(e => e.id === eventId);
+            const option = event.options.find(o => o.id === optionId);
+            
+            if(!event || !option) {
+                showNotification("选择无效，请重试。", "error");
+                return;
+            }
+            
+            // 消耗行动点
+            gameState.actionPoints--;
+            
+            // 应用效果
+            applyEffects(option.effects);
+            
+            // 显示结果
+            showEventResult(event.title, option.result, option.effects);
+            
+            // 记录历史
+            gameState.history.push({
+                month: gameState.month,
+                year: gameState.year,
+                event: event.title,
+                choice: option.text,
+                result: option.result
+            });
+            
+            // 检查是否用完行动点
+            if(gameState.actionPoints <= 0) {
+                showNotification("本月行动点已用完，请点击'继续'推进到下个月。", "info");
+            }
+        }
+        
+        // 应用效果
+        function applyEffects(effects) {
+            // 更新游戏状态
+            if(effects.prestige) {
+                gameState.prestige = Math.min(100, Math.max(0, gameState.prestige + effects.prestige));
+            }
+            if(effects.funds) {
+                gameState.funds = Math.max(0, gameState.funds + effects.funds);
+            }
+            if(effects.harmony) {
+                gameState.harmony = Math.min(100, Math.max(0, gameState.harmony + effects.harmony));
+            }
+            if(effects.fortune) {
+                gameState.fortune = Math.min(100, Math.max(0, gameState.fortune + effects.fortune));
+            }
+            
+            // 更新显示
+            updateDisplay();
+        }
+        
+        // 显示事件结果
+        function showEventResult(eventTitle, result, effects) {
+            let effectsText = "";
+            if(effects) {
+                const effectsList = [];
+                if(effects.prestige) effectsList.push(`威望${effects.prestige > 0 ? '+' : ''}${effects.prestige}`);
+                if(effects.funds) effectsList.push(`资金${effects.funds > 0 ? '+' : ''}${effects.funds}两`);
+                if(effects.harmony) effectsList.push(`和谐度${effects.harmony > 0 ? '+' : ''}${effects.harmony}`);
+                if(effectsList.length > 0) {
+                    effectsText = `<br><br><strong>效果：</strong>${effectsList.join('，')}`;
+                }
+            }
+            
+            document.getElementById('event-result-title').textContent = eventTitle;
+            document.getElementById('event-result-content').innerHTML = `
+                <div style="margin-bottom: 15px;">${result}</div>
+                ${effectsText}
+                <div style="margin-top: 15px; padding: 10px; background: #FFF0F5; border-radius: 8px;">
+                    <strong>剩余行动点：</strong>${gameState.actionPoints}/${gameState.maxActionPoints}
+                </div>
+            `;
+            
+            openModal('event-result-modal');
+        }
+        
+        // 继续到下个月
+        function continueToNextMonth() {
+            if(gameState.actionPoints > 0) {
+                if(!confirm(`本月还有${gameState.actionPoints}个行动点未使用，确定要推进到下个月吗？`)) {
+                    return;
+                }
+            }
+            
+            // 推进时间
+            gameState.month++;
+            if(gameState.month > 12) {
+                gameState.month = 1;
+                gameState.year++;
+                
+                // 更新季节
+                const seasonMap = {1:"春",2:"春",3:"春",4:"夏",5:"夏",6:"夏",7:"秋",8:"秋",9:"秋",10:"冬",11:"冬",12:"冬"};
+                gameState.season = seasonMap[gameState.month];
+                
+                // 年终结算
+                yearEndSettlement();
+            }
+            
+            // 重置行动点
+            gameState.actionPoints = gameState.maxActionPoints;
+            
+            // 随机事件
+            randomEvents();
+            
+            // 更新显示和生成新事件
+            updateDisplay();
+            generateMonthlyEvents();
+            
+            showNotification(`时间推进到：永昌${gameState.year}年${gameState.season}季`, "success");
+        }
+        
+        // 年终结算
+        function yearEndSettlement() {
+            let settlementText = `永昌${gameState.year-1}年终结：<br><br>`;
+            
+            // 计算人口变化
+            const populationChange = Math.floor(Math.random() * 3) - 1; // -1, 0, 1
+            if(populationChange > 0) {
+                settlementText += `🎉 家族添丁进口，新增${populationChange}名成员<br>`;
+            } else if(populationChange < 0) {
+                settlementText += `😔 家族人口减少${-populationChange}人<br>`;
+            } else {
+                settlementText += `📊 家族人口保持稳定<br>`;
+            }
+            
+            // 计算资金变化
+            const income = Math.floor(gameState.prestige / 10) * 100 + Math.floor(Math.random() * 200);
+            const expenses = 300 + Math.floor(Math.random() * 200);
+            const netIncome = income - expenses;
+            gameState.funds += netIncome;
+            
+            settlementText += `💰 年度收入：${income}两，支出：${expenses}两，净收入：${netIncome > 0 ? '+' : ''}${netIncome}两<br>`;
+            
+            // 检查催生令
+            if(gameState.year % 5 === 0) {
+                if(populationChange > 0) {
+                    settlementText += `🏆 朝廷嘉奖：家族人口增长，赐牌匾"善积之家"，赏银100两<br>`;
+                    gameState.funds += 100;
+                    gameState.prestige += 10;
+                } else {
+                    settlementText += `⚠️ 朝廷警告：家族人口未增长，罚银50两<br>`;
+                    gameState.funds -= 50;
+                }
+            }
+            
+            // 显示结算
+            setTimeout(() => {
+                showNotification(settlementText, "info", 8000);
+            }, 1000);
+        }
+        
+        // 随机事件
+        function randomEvents() {
+            const random = Math.random();
+            
+            if(random < 0.3) { // 30%概率触发随机事件
+                const events = [
+                    {
+                        title: "亲戚借钱",
+                        description: "远房表亲上门借钱，说家里遭了灾，需要50两银子渡过难关。",
+                        options: [
+                            { text: "慷慨解囊", effects: { funds: -50, fortune: 5 }, result: "你借给表亲50两银子，他千恩万谢地离开了。邻里称赞你重情重义。" },
+                            { text: "婉拒请求", effects: { prestige: -3 }, result: "你以家族资金紧张为由婉拒了。表亲失望离开，可能影响亲戚关系。" },
+                            { text: "借一部分，20两", effects: { funds: -20, fortune: 2 }, result: "你借了20两银子，表亲虽有些失望，但还是感谢你的帮助。" }
+                        ]
+                    },
+                    {
+                        title: "捡到落难者",
+                        description: "家仆在门口发现一名昏迷的哥儿，衣衫褴褛，似乎是逃难来的。",
+                        options: [
+                            { text: "收留救治", effects: { funds: -30, harmony: -5 }, result: "你收留了这名哥儿，请大夫为他治病。他醒来后自称是逃婚出来的，请求庇护。" },
+                            { text: "报官处理", effects: { prestige: 2 }, result: "你报官处理，官府来人带走了哥儿。后来听说他是某富商家逃出来的侍君。" },
+                            { text: "给些银钱打发", effects: { funds: -10 }, result: "你给了哥儿一些银钱和干粮，让他自行离开。他感激地磕头后离去了。" }
+                        ]
+                    }
+                ];
+                
+                const event = events[Math.floor(Math.random() * events.length)];
+                
+                setTimeout(() => {
+                    showRandomEvent(event);
+                }, 1500);
+            }
+        }
+        
+        // 显示随机事件
+        function showRandomEvent(event) {
+            document.getElementById('event-result-title').textContent = "随机事件：" + event.title;
+            document.getElementById('event-result-content').innerHTML = `
+                <div style="margin-bottom: 15px;">${event.description}</div>
+                <div class="event-options" style="margin-top: 15px;">
+                    ${event.options.map((option, index) => `
+                        <div class="event-option" onclick="selectRandomEventOption(${index}, ${JSON.stringify(event.options[index].effects)}, '${event.options[index].result}')">
+                            ${option.text}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            openModal('event-result-modal');
+        }
+        
+        // 选择随机事件选项
+        function selectRandomEventOption(optionIndex, effects, result) {
+            applyEffects(effects);
+            
+            document.getElementById('event-result-content').innerHTML = `
+                <div style="margin-bottom: 15px;">${result}</div>
+                <div style="margin-top: 15px; padding: 10px; background: #FFF0F5; border-radius: 8px;">
+                    随机事件已处理，游戏继续。
+                </div>
+            `;
+        }
+        
+        // 显示日常内容
+        function showDailyContent() {
+            const dailyText = generateDailyContent();
+            document.getElementById('daily-content').innerHTML = dailyText;
+            openModal('daily-modal');
+        }
+        
+        // 生成日常内容（约1800字）
+        function generateDailyContent() {
+            const dailyTemplates = [
+                `
+                <h3 style="color: #C2185B; margin-bottom: 15px;">永昌${gameState.year}年${gameState.season}季的日常生活</h3>
+                
+                <p style="margin-bottom: 15px;">清晨的第一缕阳光透过雕花窗棂，洒在颂家宅院中。族长颂明远早早起身，在庭院中练习了一套养生拳法。作为颂氏家族的掌舵人，他深知健康体魄的重要性。</p>
+                
+                <p style="margin-bottom: 15px;">正君林清荷已有孕三月，近日晨起时略有不适。贴身侍儿小翠细心地为他端来温水和梅子，缓解孕吐。清荷轻抚微隆的小腹，脸上洋溢着即将为人父哥的喜悦。他今日的孕痣在晨光下显得格外红润，是正红色中的上品，预示着这一胎的健壮。</p>
+                
+                <p style="margin-bottom: 15px;">侧侍柳娇儿是个娇憨性子，此刻还在暖被中酣睡。他的孕痣是浅粉色，虽不及正红，但配上他娇美的容颜，别有一番风韵。昨日他向明远撒娇，想要一对新耳坠，明远答应今日让管家去银楼看看。</p>
+                
+                <p style="margin-bottom: 15px;">精明能干的赵慧娘早已起身，正在偏厅核对上月的账目。他孕痣也是正红，且有一手好算盘。颂家的两间铺子在他的打理下，月月都有盈余。只是他偶尔会藏些私房钱，明远心知肚明却不过问，毕竟慧娘也为家族贡献良多。</p>
+                
+                <h4 style="color: #FF85A2; margin: 20px 0 10px;">孩子们的晨课</h4>
+                
+                <p style="margin-bottom: 15px;">长子颂文轩今年八岁，已到了关键的教育年龄。晨钟敲响时，他已在书斋中背诵《论语》。先生说他天资聪颖，若能专心向学，将来科举有望。只是近日文轩有些咳嗽，清荷吩咐厨房炖了冰糖雪梨。</p>
+                
+                <p style="margin-bottom: 15px;">次子颂文浩才五岁，正是贪玩的年纪。此刻他正蹲在院中看蚂蚁搬家，小手脏兮兮的，奶父在一旁哭笑不得。按族规，明年他就该正式启蒙了。</p>
+                
+                <p style="margin-bottom: 15px;">长哥儿颂玉瑶十二岁，已到了注重仪态的年纪。他的孕痣是浅粉色，这在婚嫁市场上不占优势，因此清荷更加注重培养他的才艺。此刻他正在绣楼上练习走路姿态，头顶着一碗水，小心翼翼地在房中移动。仪态先生在一旁指点："腰要直，步要稳，眼神要柔而不媚..."</p>
+                
+                <p style="margin-bottom: 15px;">三岁的次哥儿颂玉婷还是个奶娃娃，由专门的奶父照看。他的孕痣尚未定型，要等到十四岁"开面"时才能确定颜色。此刻他正咿咿呀呀地玩着布老虎，天真无邪。</p>
+                
+                <h4 style="color: #FF85A2; margin: 20px 0 10px;">午间的家庭时光</h4>
+                
+                <p style="margin-bottom: 15px;">午膳时分，全家聚在正厅。按照规矩，正君清荷坐在明远右侧，两位侧侍依次坐在下首。孩子们另设一桌。</p>
+                
+                <p style="margin-bottom: 15px;">今日的菜色是四荤四素一汤，有清荷爱吃的清蒸鲈鱼，娇儿喜欢的糖醋排骨，慧娘赞赏的翡翠豆腐。明远特意吩咐厨房为怀孕的清荷准备了燕窝羹。</p>
+                
+                <p style="margin-bottom: 15px;">用膳间，娇儿提起上巳节游园会的事，眼神中满是期待。慧娘则汇报了铺子的经营情况，提到最近丝绸价格上扬，建议扩大桑园。清荷温柔地笑着，偶尔给孩子们夹菜。</p>
+                
+                <p style="margin-bottom: 15px;">文轩说起学堂上的趣事，文浩则炫耀自己今天抓到了一只大蚂蚱，被清荷轻声责备不够文雅。玉瑶安静地用膳，举止得体，已有几分大家哥儿的风范。</p>
+                
+                <h4 style="color: #FF85A2; margin: 20px 0 10px;">午后的各司其职</h4>
+                
+                <p style="margin-bottom: 15px;">午后，明远在书房处理家族事务。管家送来佃农的春耕进度报告，一切顺利。账房先生呈上本月开支，慧娘管理的铺子盈利八十两，田租收入五十两，各项支出六十两，净余七十两。</p>
+                
+                <p style="margin-bottom: 15px;">清荷小憩后，在花厅接见了媒婆王氏。王氏是为玉瑶说亲来的，对方是县里布商李家的次子。清荷仔细询问了对方家世、品性，心中暗自权衡。玉瑶才十二岁，其实不必着急，但好姻缘也要早早留意。</p>
+                
+                <p style="margin-bottom: 15px;">娇儿在房中试戴新送来的首饰，对着一人高的铜镜左照右照。他的贴身侍儿小莲嘴甜地夸赞："哥儿戴这珍珠耳坠真好看，像画里的人儿。"娇儿满意地笑了，又试起了新衣。</p>
+                
+                <p style="margin-bottom: 15px;">慧娘去了铺子，亲自查账。他眼睛毒，一眼看出有一笔账目不对，叫来掌柜细问。原来是掌柜的侄子多支了五两银子，慧娘当场扣了掌柜半月工钱，立了规矩。</p>
+                
+                <p style="margin-bottom: 15px;">孩子们各有安排：文轩继续在书斋学习，下午是策论课；文浩被奶父带去午睡；玉瑶有琴课，先生教他弹《高山流水》；玉婷在院中晒太阳，玩着新做的布娃娃。</p>
+                
+                <h4 style="color: #FF85A2; margin: 20px 0 10px;">傍晚的家庭温馨</h4>
+                
+                <p style="margin-bottom: 15px;">夕阳西下，明远处理完事务，来到清荷房中。清荷正在为未出生的孩子缝制小衣，针脚细密。明远轻抚他的肩，询问今日身体如何。清荷微笑说一切都好，只是有些想吃酸梅。</p>
+                
+                <p style="margin-bottom: 15px;">晚膳后，一家人在庭院中散步。春日的晚风带着花香，孩子们在院中玩耍，大人们坐在亭中闲话。娇儿弹了一曲琵琶，慧娘讲了铺子里的趣事，清荷静静地听着，手不自觉护着小腹。</p>
+                
+                <p style="margin-bottom: 15px;">夜幕降临，各房依次点亮灯火。明远今夜宿在清荷房中，这是正君的体面，也是他怀孕期间应有的关怀。娇儿虽有些失落，但也理解。慧娘则无所谓，他更关心明早要去收一笔账。</p>
+                
+                <p style="margin-bottom: 15px;">颂家宅院在夜色中安静下来，只有守夜人的灯笼在廊下缓缓移动。这个以耕读传家的家族，在这太平年岁中，正按照既定的轨迹稳步前行。明远望着窗外的明月，思考着家族的未来：文轩的科举、玉瑶的婚事、清荷腹中的孩子、家族的产业扩张...千头万绪，都需要他这族长一一谋划。</p>
+                
+                <p style="margin-bottom: 15px;">但此刻，他先要确保家人安康，家族和睦。毕竟，在这个重农抑商却推崇匠籍的王朝里，家族的兴旺不仅靠财富权势，更靠人丁兴旺、家风清正。而这一切，都始于这日常的点点滴滴。</p>
+                `
+            ];
+            
+            return dailyTemplates[0];
+        }
+        
+        // 查询信息
+        function queryInfo() {
+            openModal('query-modal');
+        }
+        
+        // 执行查询
+        function executeQuery() {
+            const query = document.getElementById('search-input').value.trim().toLowerCase();
+            const resultsDiv = document.getElementById('query-results');
+            
+            if(!query) {
+                resultsDiv.innerHTML = `<div style="padding: 15px; background: #FFF0F5; border-radius: 8px;">请输入查询内容。</div>`;
+                return;
+            }
+            
+            let results = [];
+            
+            // 查询人物
+            if(query.includes("颂") || query.includes("明远") || query.includes("清荷") || query.includes("娇儿") || query.includes("慧娘") || 
+               query.includes("文轩") || query.includes("文浩") || query.includes("玉瑶") || query.includes("玉婷")) {
+                
+                // 族长
+                if(query.includes("明远") || query.includes("族长")) {
+                    results.push(`
+                        <div class="character-details" style="margin-bottom: 15px;">
+                            <div class="character-name">族长：颂明远 (字德昭)</div>
+                            <div>年龄：32岁</div>
+                            <div>先天资质：体魄78 · 智慧85 · 魅力70 · 气运65</div>
+                            <div>能力数值：文治82 · 武功61 · 技艺45</div>
+                            <div>性格特质：稳重持家 · 重视教育 · 略有保守</div>
+                            <div>身份：颂家家主，负责家族所有事务决策</div>
+                        </div>
+                    `);
+                }
+                
+                // 正君
+                if(query.includes("清荷") || query.includes("正君")) {
+                    results.push(`
+                        <div class="character-details" style="margin-bottom: 15px;">
+                            <div class="character-name">正君：林清荷</div>
+                            <div>年龄：29岁 <span class="status-icon status-pregnant"></span>孕三月</div>
+                            <div>孕痣：正红 (宜家相，孕率30%-40%)</div>
+                            <div>性格：贤惠 - 自动管理后院，提升全家营养值</div>
+                            <div>健康状况：良好，孕期反应正常</div>
+                            <div>子女：长子颂文轩(8岁)、次子颂文浩(5岁)</div>
+                        </div>
+                    `);
+                }
+                
+                // 侧侍娇儿
+                if(query.includes("娇儿") || query.includes("柳娇儿")) {
+                    results.push(`
+                        <div class="character-details" style="margin-bottom: 15px;">
+                            <div class="character-name">侧侍：柳娇儿</div>
+                            <div>年龄：24岁 <span class="status-icon status-healthy"></span>健康</div>
+                            <div>孕痣：浅粉 (薄命相，孕率约25%)</div>
+                            <div>性格：娇憨 - 需频繁陪伴，容易生出高容貌子嗣，但不会做家务</div>
+                            <div>子女：长哥儿颂玉瑶(12岁)</div>
+                            <div>特点：容貌姣好，擅长琵琶，喜爱首饰华服</div>
+                        </div>
+                    `);
+                }
+                
+                // 侧侍慧娘
+                if(query.includes("慧娘") || query.includes("赵慧娘")) {
+                    results.push(`
+                        <div class="character-details" style="margin-bottom: 15px;">
+                            <div class="character-name">侧侍：赵慧娘</div>
+                            <div>年龄：26岁 <span class="status-icon status-healthy"></span>健康</div>
+                            <div>孕痣：正红 (宜家相，孕率30%-40%)</div>
+                            <div>性格：精明 - 能管理店铺，增加收入，但会私藏私房钱</div>
+                            <div>子女：次哥儿颂玉婷(3岁)</div>
+                            <div>职责：管理颂家两间铺子，负责家族部分账目</div>
+                        </div>
+                    `);
+                }
+                
+                // 长子文轩
+                if(query.includes("文轩") || query.includes("长子")) {
+                    results.push(`
+                        <div class="character-details" style="margin-bottom: 15px;">
+                            <div class="character-name">长子：颂文轩</div>
+                            <div>年龄：8岁</div>
+                            <div>性别：男子</div>
+                            <div>资质：聪慧 - 学习速度快，理解力强</div>
+                            <div>教育：文课 (四书五经，目标科举)</div>
+                            <div>健康状况：良好，偶有咳嗽</div>
+                            <div>特点：勤奋好学，尊敬师长，是科举的好苗子</div>
+                        </div>
+                    `);
+                }
+                
+                // 次子文浩
+                if(query.includes("文浩") || query.includes("次子")) {
+                    results.push(`
+                        <div class="character-details" style="margin-bottom: 15px;">
+                            <div class="character-name">次子：颂文浩</div>
+                            <div>年龄：5岁</div>
+                            <div>性别：男子</div>
+                            <div>资质：普通 - 各方面均衡发展</div>
+                            <div>教育：幼年期，明年正式启蒙</div>
+                            <div>特点：活泼好动，对自然感兴趣，喜欢小动物</div>
+                        </div>
+                    `);
+                }
+                
+                // 长哥儿玉瑶
+                if(query.includes("玉瑶") || query.includes("长哥儿")) {
+                    results.push(`
+                        <div class="character-details" style="margin-bottom: 15px;">
+                            <div class="character-name">长哥儿：颂玉瑶</div>
+                            <div>年龄：12岁</div>
+                            <div>性别：哥儿</div>
+                            <div>孕痣：浅粉 (薄命相，孕率约25%)</div>
+                            <div>教育：闺塾 - 仪态班 (学习走路姿态、眼神流转、皮肤保养等)</div>
+                            <div>监视度：45/100 (需注意名节保护)</div>
+                            <div>特点：文静乖巧，学习认真，已有媒婆上门说亲</div>
+                            <div>目标：高嫁入官宦或富商之家为正君</div>
+                        </div>
+                    `);
+                }
+                
+                // 次哥儿玉婷
+                if(query.includes("玉婷") || query.includes("次哥儿")) {
+                    results.push(`
+                        <div class="character-details" style="margin-bottom: 15px;">
+                            <div class="character-name">次哥儿：颂玉婷</div>
+                            <div>年龄：3岁</div>
+                            <div>性别：哥儿</div>
+                            <div>孕痣：未定 (14岁"开面"时确定颜色)</div>
+                            <div>教育：幼年期，由奶父照看</div>
+                            <div>特点：天真可爱，是全家的小宝贝</div>
+                        </div>
+                    `);
+                }
+            }
+            
+            // 查询产业
+            if(query.includes("产业") || query.includes("铺子") || query.includes("田产")) {
+                results.push(`
+                    <div style="padding: 15px; background: #FFF0F5; border-radius: 8px; margin-bottom: 15px;">
+                        <div style="font-weight: bold; color: #C2185B; margin-bottom: 10px;">家族产业</div>
+                        <div>1. 田产：桃花村周边良田50亩，佃农耕种，年租金约300两</div>
+                        <div>2. 铺子：临安县城内绸缎铺一间，由赵慧娘管理，月盈利约80两</div>
+                        <div>3. 铺子：临安县城内杂货铺一间，由赵慧娘监管，月盈利约40两</div>
+                        <div>4. 住宅：颂家祖宅，三进院落，带花园，价值约2000两</div>
+                        <div>总资产估值：约3000两</div>
+                    </div>
+                `);
+            }
+            
+            // 查询事件历史
+            if(query.includes("历史") || query.includes("事件") || query.includes("记录")) {
+                let historyHTML = `<div style="padding: 15px; background: #FFF0F5; border-radius: 8px; margin-bottom: 15px;">`;
+                historyHTML += `<div style="font-weight: bold; color: #C2185B; margin-bottom: 10px;">事件历史记录</div>`;
+                
+                if(gameState.history.length === 0) {
+                    historyHTML += `<div>暂无历史记录。</div>`;
+                } else {
+                    // 只显示最近5条记录
+                    const recentHistory = gameState.history.slice(-5).reverse();
+                    recentHistory.forEach(record => {
+                        historyHTML += `
+                            <div style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #FFC1CC;">
+                                <div><strong>${record.year}年${record.month}月：</strong>${record.event}</div>
+                                <div>选择：${record.choice}</div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                historyHTML += `</div>`;
+                results.push(historyHTML);
+            }
+            
+            // 如果没有匹配结果
+            if(results.length === 0) {
+                resultsDiv.innerHTML = `
+                    <div style="padding: 15px; background: #FFF0F5; border-radius: 8px;">
+                        未找到与"${query}"相关的结果。<br><br>
+                        可查询内容：<br>
+                        1. 人物姓名（如：颂明远、林清荷、颂文轩等）<br>
+                        2. 产业信息<br>
+                        3. 事件历史
+                    </div>
+                `;
+            } else {
+                resultsDiv.innerHTML = results.join('');
+            }
+        }
+        
+        // 模态框函数
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // 显示通知
+        function showNotification(message, type = "info", duration = 4000) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            
+            // 设置颜色
+            if(type === "success") {
+                notification.style.background = "linear-gradient(90deg, #4CAF50, #8BC34A)";
+            } else if(type === "error") {
+                notification.style.background = "linear-gradient(90deg, #F44336, #E91E63)";
+            } else {
+                notification.style.background = "linear-gradient(90deg, var(--strawberry-pink), var(--deep-pink))";
+            }
+            
+            notification.style.display = 'block';
+            
+            // 自动隐藏
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, duration);
+        }
+        
+        // 重开游戏
+        function restartGame() {
+            if(confirm("确定要重新开始游戏吗？所有进度将丢失。")) {
+                location.reload();
+            }
+        }
+        
+        // 存档功能（简化版）
+        function saveGame() {
+            // 在实际游戏中，这里应该将游戏状态保存到服务器或本地存储
+            showNotification("游戏进度已保存！", "success");
+        }
+        
+        // 绑定事件监听器
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化游戏
+            initGame();
+            
+            // 绑定按钮事件
+            document.getElementById('continue-btn').addEventListener('click', continueToNextMonth);
+            document.getElementById('restart-btn').addEventListener('click', restartGame);
+            document.getElementById('query-btn').addEventListener('click', queryInfo);
+            document.getElementById('daily-btn').addEventListener('click', showDailyContent);
+            document.getElementById('save-btn').addEventListener('click', saveGame);
+            
+            // 绑定查询输入事件
+            document.getElementById('search-input').addEventListener('keyup', function(event) {
+                if(event.key === 'Enter') {
+                    executeQuery();
+                }
+            });
+            
+            // 点击模态框外部关闭
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                modal.addEventListener('click', function(event) {
+                    if(event.target === this) {
+                        this.style.display = 'none';
+                    }
+                });
+            });
+        });
+        
+        // 全局函数供HTML调用
+        window.selectEventOption = selectEventOption;
+        window.selectRandomEventOption = selectRandomEventOption;
+        window.closeModal = closeModal;
+        window.executeQuery = executeQuery;
+    </script>
+</body>
+</html>
